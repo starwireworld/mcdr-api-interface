@@ -1,0 +1,10 @@
+{
+    "id": "stats_transfer",
+    "version": "1.0.0",
+    "name": "Stats Transfer",
+    "author": "Basicprogrammer10",
+    "link": "https://github.com/starwireworld/mcdr-api-interface",
+    "dependencies": {
+        "mcdreforged": ">=2.0.0-alpha.1"
+    }
+}
