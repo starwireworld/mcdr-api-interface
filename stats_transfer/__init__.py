@@ -16,7 +16,6 @@ RUNNER = None
 
 ## Main Functions ##
 
-
 def run_update():
     player_stats = {}
 
