@@ -1,38 +1,20 @@
-import requests
-from mcdreforged.api.all import *
-
 import time
 import multiprocessing
 import json
 import os
 import uuid
 
-## Config ##
+import requests
+from mcdreforged.api.all import *
 
-# Update api every n secs
-UPDATE_INTERVAL = 60 * 60
-
-# Version of the stat files
-# 1.7.6 - 1.12.2 (0)
-# 1.13 - *       (1)
-STAT_FORMAT_VERSION = 0
-
-# Name of world
-WORLD_NAME = 'world'
-
-# Url to post data to
-UPDATE_URI = ''
-
-# Auth token (Header: token)
-AUTH_TOKEN = ''
-
-##       ##
+from config import *
+from util import *
+from parsers import *
 
 PLAYER_STATS_PATH = f"{os.getcwd()}/server/{WORLD_NAME}/stats"
 RUNNER = None
 
 ## Main Functions ##
-
 
 def run_update():
     player_stats = {}
@@ -65,80 +47,6 @@ def main():
         except:
             pass
         time.sleep(UPDATE_INTERVAL - (time.time() - start))
-
-## Util Functions ##
-
-
-def try_get_json(json, key, fallback):
-    try:
-        return json[key]
-    except KeyError:
-        return fallback
-
-## Stat Parsers ##
-
-
-def get_global_stats(json):
-    final = {}
-
-    for player in json.keys():
-        for key in json[player].keys():
-            if key not in final:
-                final[key] = 0
-            final[key] += json[player][key]
-
-    return final
-
-
-def get_player_stats(json):
-    final = {}
-
-    for uuid in json.keys():
-        player = str(uuid)
-        final[player] = json[uuid]
-
-    return final
-
-
-def parse_stats(json):
-    mined_block = 0
-    play_ticks = 0
-    deaths = 0
-
-    if "stats" in json:
-        json = json["stats"]
-
-        if "minecraft:mined" in json:
-            for i in json["minecraft:mined"].values():
-                mined_block += i
-
-        if "minecraft:custom" in json:
-            play_ticks = try_get_json(
-                json["minecraft:custom"], "minecraft:play_time", 0)
-            deaths = try_get_json(
-                json["minecraft:custom"], "minecraft:deaths", 0)
-
-    return {
-        "minedBlocks": mined_block,
-        "playTicks": play_ticks,
-        "deathCount": deaths
-    }
-
-
-def parse_stats_old(json):
-    mined_blocks = 0
-    play_ticks = try_get_json(json, "stat.playOneMinute", 0)
-    deaths = try_get_json(json, "stat.deaths", 0)
-
-    for key in json.keys():
-        if key.startswith("stat.mineBlock."):
-            mined_blocks += json[key]
-
-    return {
-        "minedBlocks": mined_blocks,
-        "playTicks": play_ticks,
-        "deathCount": deaths
-    }
 
 
 ## MCDR Events ##
